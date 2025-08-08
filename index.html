@@ -24,7 +24,7 @@
         }
         /* Style for the background image hero section */
         .hero-bg {
-            /* A beautiful wedding-themed background image */
+            /* The new wedding-themed background image */
             background-image: url('https://images.unsplash.com/photo-1606800052052-a08af7148866?q=80&w=2670&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D');
             background-size: cover;
             background-position: center;
@@ -42,13 +42,9 @@
             <p class="text-2xl md:text-3xl mb-4 tracking-wider">We're Getting Married</p>
             <h1 class="font-cursive text-7xl md:text-9xl mb-2">Abin & Liya</h1>
             <p class="text-xl md:text-2xl mt-4 font-light">January 3, 2026</p>
-        </div>
-        <!-- Scroll down indicator -->
-        <div class="absolute bottom-10 left-1/2 -translate-x-1/2 z-10">
-            <a href="#events" class="animate-bounce">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
-                </svg>
+            <!-- New RSVP Button -->
+            <a href="#rsvp" class="mt-8 inline-block bg-white/90 text-amber-800 px-8 py-3 rounded-full text-lg font-semibold hover:bg-white transition-all shadow-lg">
+                RSVP Now
             </a>
         </div>
     </header>
@@ -143,17 +139,29 @@
                         </div>
                     </div>
                     
-                    <!-- This section is now conditional -->
-                    <div id="events-selection" class="hidden space-y-3 pt-2 pl-4">
-                        <label class="block text-sm font-medium text-gray-700">Which event(s) will you attend?</label>
-                        <label class="flex items-center">
-                            <input type="checkbox" name="events_attending" value="Betrothal" class="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded">
-                            <span class="ml-3 text-gray-700">Betrothal (Dec 26)</span>
-                        </label>
-                        <label class="flex items-center">
-                            <input type="checkbox" name="events_attending" value="Wedding Day" class="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded">
-                            <span class="ml-3 text-gray-700">Wedding Day (Jan 3)</span>
-                        </label>
+                    <div id="conditional-rsvp-section" class="hidden pl-4 space-y-6">
+                        <!-- Guest Counter -->
+                        <div id="guest-counter" class="space-y-2 pt-2">
+                            <label class="block text-sm font-medium text-gray-700">How many seats shall we reserve in your name?</label>
+                            <div class="flex items-center justify-start space-x-4">
+                                <button type="button" id="minus-btn" class="bg-gray-200 h-8 w-8 rounded-full text-lg font-bold text-gray-600 hover:bg-gray-300 transition-colors flex items-center justify-center disabled:opacity-50">-</button>
+                                <span id="guest-count-display" class="text-xl font-semibold w-8 text-center">1</span>
+                                <button type="button" id="plus-btn" class="bg-gray-200 h-8 w-8 rounded-full text-lg font-bold text-gray-600 hover:bg-gray-300 transition-colors flex items-center justify-center">+</button>
+                                <input type="hidden" name="number_of_guests" id="guest-count-input" value="1">
+                            </div>
+                        </div>
+                        <!-- Events Selection -->
+                        <div id="events-selection" class="space-y-3 pt-2">
+                            <label class="block text-sm font-medium text-gray-700">Which event(s) will you attend?</label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="events_attending" value="Betrothal" class="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded">
+                                <span class="ml-3 text-gray-700">Betrothal (Dec 26)</span>
+                            </label>
+                            <label class="flex items-center">
+                                <input type="checkbox" name="events_attending" value="Wedding Day" class="h-4 w-4 text-amber-600 focus:ring-amber-500 border-gray-300 rounded">
+                                <span class="ml-3 text-gray-700">Wedding Day (Jan 3)</span>
+                            </label>
+                        </div>
                     </div>
 
                     <div>
@@ -184,17 +192,45 @@
         const submitButton = document.getElementById('submit-button');
         const formMessage = document.getElementById('form-message');
         const attendingRadios = document.querySelectorAll('input[name="attending"]');
-        const eventsSelection = document.getElementById('events-selection');
+        const conditionalSection = document.getElementById('conditional-rsvp-section');
+        
+        // Guest counter elements
+        const minusBtn = document.getElementById('minus-btn');
+        const plusBtn = document.getElementById('plus-btn');
+        const guestCountDisplay = document.getElementById('guest-count-display');
+        const guestCountInput = document.getElementById('guest-count-input');
 
-        // Show/hide event checkboxes based on RSVP response
+        // Show/hide conditional RSVP section
         attendingRadios.forEach(radio => {
             radio.addEventListener('change', (event) => {
                 if (event.target.value === 'Yes') {
-                    eventsSelection.classList.remove('hidden');
+                    conditionalSection.classList.remove('hidden');
                 } else {
-                    eventsSelection.classList.add('hidden');
+                    conditionalSection.classList.add('hidden');
                 }
             });
+        });
+
+        // Handle guest counter
+        let guestCount = 1;
+        minusBtn.disabled = true;
+
+        plusBtn.addEventListener('click', () => {
+            guestCount++;
+            guestCountDisplay.textContent = guestCount;
+            guestCountInput.value = guestCount;
+            minusBtn.disabled = false;
+        });
+
+        minusBtn.addEventListener('click', () => {
+            if (guestCount > 1) {
+                guestCount--;
+                guestCountDisplay.textContent = guestCount;
+                guestCountInput.value = guestCount;
+                if (guestCount === 1) {
+                    minusBtn.disabled = true;
+                }
+            }
         });
 
         // IMPORTANT: Replace this with your Google Apps Script Web App URL
@@ -219,7 +255,12 @@
                         formMessage.textContent = 'Thank you! Your RSVP has been recorded.';
                         formMessage.style.color = 'green';
                         form.reset();
-                        eventsSelection.classList.add('hidden'); // Hide checkboxes on reset
+                        conditionalSection.classList.add('hidden'); // Hide section on reset
+                        // Reset guest counter on success
+                        guestCount = 1;
+                        guestCountDisplay.textContent = 1;
+                        guestCountInput.value = 1;
+                        minusBtn.disabled = true;
                     } else {
                          throw new Error('Network response was not ok.');
                     }
